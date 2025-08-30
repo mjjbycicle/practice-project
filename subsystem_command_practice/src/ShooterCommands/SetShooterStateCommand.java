@@ -1,15 +1,15 @@
 package ShooterCommands;
 
-import ShooterSubsystem.ShooterSubsystem;
+import ShooterSubsystem.*;
 import util.Command;
 
-public class SetShooterSpeedCommand extends Command {
+public class SetShooterStateCommand extends Command {
     private final ShooterSubsystem shooterSubsystem;
-    private final double speed;
+    private final ShooterConstants.ShooterState shooterState;
     
-    public SetShooterSpeedCommand(ShooterSubsystem shooterSubsystem, double speed) {
+    public SetShooterStateCommand(ShooterSubsystem shooterSubsystem, ShooterConstants.ShooterState shooterState) {
         this.shooterSubsystem = shooterSubsystem;
-        this.speed = speed;
+        this.shooterState = shooterState;
     }
     
     @Override
@@ -19,12 +19,12 @@ public class SetShooterSpeedCommand extends Command {
 
     @Override
     public void initialize() {
-        shooterSubsystem.setSpeed(speed);
+        shooterSubsystem.setState(shooterState);
     }
 
     @Override
     public void end(Boolean interrupted) {
-        
+
     }
 
     @Override

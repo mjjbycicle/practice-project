@@ -1,8 +1,17 @@
 package ShooterCommands;
 
+import ShooterSubsystem.ShooterSubsystem;
 import util.Command;
 
 public class SetShooterHoodPositionCommand extends Command {
+    private final ShooterSubsystem shooterSubsystem;
+    private final double hoodPosition;
+    
+    public SetShooterHoodPositionCommand(ShooterSubsystem shooterSubsystem, double hoodPosition) {
+        this.shooterSubsystem = shooterSubsystem;
+        this.hoodPosition = hoodPosition;
+    }
+    
     @Override
     public void execute() {
         
@@ -10,7 +19,7 @@ public class SetShooterHoodPositionCommand extends Command {
 
     @Override
     public void initialize() {
-
+        shooterSubsystem.setPosition(hoodPosition);
     }
 
     @Override
@@ -20,6 +29,6 @@ public class SetShooterHoodPositionCommand extends Command {
 
     @Override
     public Boolean isFinished() {
-        return null;
+        return true;
     }
 }
