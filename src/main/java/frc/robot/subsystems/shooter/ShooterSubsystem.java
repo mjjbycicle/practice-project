@@ -1,42 +1,53 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * An incomplete class for a shooter.
  * The shooter will have a wheel to launch balls and a hood to adjust the angle.
  * The wheel will be powered by 1 motor, and the hood will be powered by 1 motor.
  */
-public class ShooterSubsystem {
+public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX speedMotor;
     private final TalonFX hoodMotor;
-    private double currentSpeed;
-    private double currentPosition;
     private ShooterConstants.ShooterState currentState;
     
     public ShooterSubsystem() {
         speedMotor = new TalonFX(ShooterConstants.IDs.SpeedMotorID);
         hoodMotor = new TalonFX(ShooterConstants.IDs.HoodMotorID);
-        currentSpeed = ShooterConstants.ShooterState.IDLE.speed;
-        currentPosition = ShooterConstants.ShooterState.IDLE.position;
         currentState = ShooterConstants.ShooterState.IDLE;
-        speedMotor.set(currentSpeed);
-        hoodMotor.set(currentPosition);
+        speedMotor.set(currentState.speed);
+        hoodMotor.setPosition(currentState.position);
     }
     
     public void setState(ShooterConstants.ShooterState newState) {
         currentState = newState;
-        currentPosition = newState.position;
-        currentSpeed = newState.speed;
+        setSpeed(newState.speed);
+        setPosition(newState.position);
     }
     
     public void setSpeed(double speed) {
-        currentSpeed = speed;
         speedMotor.set(speed);
     }
     
     public void setPosition(double position) {
-        currentPosition = position;
         hoodMotor.setPosition(position);
+    }
+    
+    public Command setShooterStateCommand(ShooterConstants.ShooterState newState) {
+        return this.runOnce(
+                () -> {
+                    this.setState(newState);
+                }
+        );
+    }
+    
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Shooter Speed", speedMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter Position", hoodMotor.getPosition().getValueAsDouble());
     }
 }

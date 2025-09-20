@@ -10,6 +10,11 @@ import frc.robot.Constants.OperatorConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.CommandFactory;
+import frc.robot.subsystems.indexer.IndexerSubsystem;
+import frc.robot.subsystems.intake.IntakeConstants;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 
 /**
@@ -19,6 +24,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+    private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
+    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    
+    private final CommandFactory commandFactory = new CommandFactory(shooterSubsystem, indexerSubsystem, intakeSubsystem);
 
     // Replace with CommandPS4Controller or CommandJoystick if needed
     private final CommandXboxController driverController =
@@ -44,6 +54,8 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
+        driverController.a().onTrue(commandFactory.ShootSequenceCommand());
+        driverController.b().onTrue(commandFactory.IntakeSequenceCommand());
     }
 
 
