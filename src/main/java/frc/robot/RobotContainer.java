@@ -5,12 +5,17 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.OperatorConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.CommandFactory;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -27,8 +32,9 @@ public class RobotContainer {
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     private final IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    private final CommandSwerveDrivetrain swerve = TunerConstants.createDrivetrain();
     
-    private final CommandFactory commandFactory = new CommandFactory(shooterSubsystem, indexerSubsystem, intakeSubsystem);
+    private final CommandFactory commandFactory = new CommandFactory(shooterSubsystem, indexerSubsystem, intakeSubsystem, swerve);
 
     // Replace with CommandPS4Controller or CommandJoystick if needed
     private final CommandXboxController driverController =
@@ -56,6 +62,26 @@ public class RobotContainer {
     private void configureBindings() {
         driverController.a().onTrue(commandFactory.ShootSequenceCommand());
         driverController.b().onTrue(commandFactory.IntakeSequenceCommand());
+        swerve.setDefaultCommand(
+                swerve.applyRequest(
+                        () -> new SwerveRequest.FieldCentric()
+                                .withVelocityX(getLeftX())
+                                .withVelocityY(getLeftY())
+                                .withRotationalRate(driverController.getRightX())
+                )
+        );
+        driverController.x().whileTrue(
+                commandFactory.driveThenShootCommand()
+        );
+        driverController.y().whileTrue(commandFactory.driveFacingCenterCommand(this::getLeftX, this::getLeftY));
+    }
+    
+    public double getLeftX() {
+        return driverController.getLeftX() * Constants.speedMultiplier;
+    }
+    
+    public double getLeftY() {
+        return driverController.getLeftY() * Constants.speedMultiplier;
     }
 
 

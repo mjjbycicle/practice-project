@@ -47,7 +47,12 @@ public class ShooterSubsystem extends SubsystemBase {
     
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Shooter Speed", speedMotor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Shooter Position", hoodMotor.getPosition().getValueAsDouble());
+        if (currentState.useTrackingSpeed) {
+            setSpeed(currentState.speedSupplier.getAsDouble());
+            SmartDashboard.putNumber("Shooter Speed", currentState.speedSupplier.getAsDouble());
+        } else {
+            SmartDashboard.putNumber("Shooter Speed", currentState.speed);
+        }
+        SmartDashboard.putNumber("Shooter Position", currentState.position);
     }
 }
